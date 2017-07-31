@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>BookList.qml</file>
+        <file>images/qt-logo.png</file>
+        <file>images/book.jpg</file>
+        <file>images/book.png</file>
+        <file>images/effectiveModernC++.jpg</file>
+        <file>images/tour.jpg</file>
+        <file>BookListDelegate.qml</file>
+        <file>BookDetail.qml</file>
+        <file>EditBook.qml</file>
+    </qresource>
+</RCC>
