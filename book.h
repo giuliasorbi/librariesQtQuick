@@ -26,11 +26,10 @@ public:
     int category() const { return m_category; }
     void setName(const QString& name) { m_name = name; emit(nameChanged()); }
 
-    void set(const QString& string) { m_name = string; }
-    void setAuthor(const QString& a) { m_author = a; }
-    void setDescription(const QString& desc) { m_description = desc; }
-    void setCategory(const int& cat) {m_category = cat; }
-    void setImage(const QString& image) { m_image = image; }
+    void setAuthor(const QString& a) { m_author = a; emit(authorChanged()); }
+    void setDescription(const QString& desc) { m_description = desc; emit(descriptionChanged()); }
+    void setCategory(const int& cat) {m_category = cat; emit(categoryChanged()); }
+    void setImage(const QString& image) { m_image = image; emit(imageChanged()); }
 private:
     int m_id;
     QString m_name;

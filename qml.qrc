@@ -6,6 +6,7 @@
         <file>images/qt-logo.png</file>
         <file>images/book.jpg</file>
         <file>images/book.png</file>
+        <file>images/book1.png</file>
         <file>images/effectiveModernC++.jpg</file>
         <file>images/tour.jpg</file>
         <file>BookListDelegate.qml</file>

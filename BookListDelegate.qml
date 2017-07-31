@@ -1,6 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import QtQuick.Controls.Material 2.2
+//import QtQuick.Controls.Material 2.2
 import QtQml.Models 2.2
 import QtQuick.Layouts 1.0
 import model 1.0
@@ -60,8 +60,8 @@ Item {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            itemDelegate.ListView.view.currentIndex = index
-            console.log("clicked: row --> ", index, ", title --> ", title)
+            itemDelegate.ListView.view.currentIndex = index;
+            console.log("clicked: row --> "+ index + ", title --> ", title + " " + itemDelegate.ListView.view.model.rowCount());
         }
     }
 }

@@ -1,6 +1,8 @@
 #include <QMap>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QImage>
+#include <QStandardPaths>
 #include "datamodel.h"
 
 DataModel::DataModel(QObject* parent)
@@ -14,14 +16,15 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-
     if (index.row() >= m_books.size()) {
         return QVariant();
     }
 
     auto i = m_books.begin() + index.row();
+//    qDebug() << "data.....ROW " << index.row() << "id book " << i.value()->id();
 
     if (role == TitleRole) {
+//        qDebug() <<i.value()->name();
         return i.value()->name();
     } else if (role == DescRole) {
         return i.value()->description();
@@ -40,69 +43,46 @@ int DataModel::rowCount(const QModelIndex &parent) const
     if (parent.column() > 0) {
         return 0;
     }
+    qDebug() << "row count " << m_books.size();
     return m_books.size();
-
 }
 
 bool DataModel::setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole)
 {
-    qDebug() << "index row " << index.row() << " new value " << value.toString();
-    qDebug() << m_books.size();
+    Q_UNUSED(role)
+    // name, desc, author, image, category
+//    qDebug() << "index row " << index.row();
+//    qDebug() << m_books.size();
+
+    QList<QVariant> list = value.toList(); // title, description, author, image, category
+
     auto i = m_books.begin() + index.row();
-    qDebug() << i.value()->name();
-//    Book* b = this->get(index.row());
-//    qDebug() << "after get book";
-//    qDebug() << "name " << b->name();
-//     qDebug() << "name " << m_categories.value(0)->name();
-//    m_books[index.row()]->set(value.toString());
-     return true;
+
+    if (i.value()->name() != list.at(0).toString()) {
+        i.value()->setName(list.at(0).toString());
+    }
+
+    if (i.value()->description() != list.at(1).toString()) {
+        i.value()->setDescription(list.at(1).toString());
+    }
+
+    if (i.value()->author() != list.at(2).toString()) {
+        i.value()->setAuthor(list.at(2).toString());
+    }
+    if (i.value()->image() != list.at(3).toString()) {
+        i.value()->setImage(list.at(3).toString());
+    }
+
+    if (i.value()->category() != list.at(4).toInt()) {
+
+        m_categories[i.value()->category()]->removeBook(i.value()->id());
+        m_categories[list.at(4).toInt()]->addBook(i.value()->id());
+        i.value()->setCategory(list.at(4).toInt());
+    }
+
+    emit (dataChanged(index,index));
+    return true;
 }
-
-
-//bool DataModel::setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole)
-//{
-
-//    if (role != Qt::DisplayRole) {
-//            return false;
-//    }
-
-//    QList<QVariant> list = value.toList(); // title, description, author, image, category
-//    auto c = 0;
-//    auto id = 0;
-//    for (const auto& b : m_books) {
-//        if (c == index.row()) {
-//            id = b.id();
-//            break;
-//        }
-//        c++;
-//    }
-
-//    if (!m_books.contains(id)) {
-//        return false;
-//    }
-//    if (m_books.value(id).name() != list.at(0).toString()) {
-//        m_books[id].setName(list.at(0).toString());
-//    }
-//    if (m_books.value(id).description() != list.at(1).toString()) {
-//        m_books[id].setDescription(list.at(1).toString());
-//    }
-//    if (m_books.value(id).author() != list.at(2).toString()) {
-//        m_books[id].setAuthor(list.at(2).toString());
-//    }
-//    if (m_books.value(id).image() != list.at(3).toString()) {
-//          m_books[id].setImage(list.at(3).toString());
-//    }
-//    if (m_books.value(id).category() != list.at(4).toInt()) {
-//        m_categories[m_books.value(id).category()].removeBook(m_books.value(id).id());
-//        m_categories[list.at(4).toInt()].addBook(m_books.value(id).id());
-//        m_books[id].setCategory(list.at(4).toInt());
-//    }
-
-//    emit (dataChanged(index,index));
-//    emit (updateBookInfo(index));
-
-//    return true;
-//}
 
 QVariant DataModel::headerData(int section, Qt::Orientation orientation, int role) const {
     Q_UNUSED(section)
@@ -116,16 +96,24 @@ QVariant DataModel::headerData(int section, Qt::Orientation orientation, int rol
     return QVariant();
 }
 
+bool DataModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    qDebug() << "remove";
+    beginRemoveRows(parent, row, row + count - 1);
+    auto i = m_books.begin() + row;
+    m_books.remove(i.value()->id());
+    m_categories[i.value()->category()]->removeBook(i.value()->id());
+    endRemoveRows();
+    qDebug() << "after remove" << m_books.size();
 
-//Book DataModel::getBook(const int& row) const {
-//    auto c = 0;
-//    for (const auto& b : m_books) {
-//        if (c == row) {
-//            return m_books.value(b.id());
-//        }
-//        c++;
-//    }
-//}
+    qDebug() << "before data changed";
+    emit (dataChanged(parent, parent));
+    qDebug() << "after data changed";
+
+
+    return true;
+
+}
 
 //bool DataModel::removeRows(int row, int count, const QModelIndex &parent )
 //{
@@ -226,17 +214,36 @@ Category* DataModel::getCategory(const int& row) const
 }
 
 
-void DataModel::onSaveBook(const int& row, const QString& name)
+void DataModel::onSaveBook(const int& row, const QString& name, const QString& description, const QString& author, const QString& image, const int& category)
 {
-    qDebug() << "Model slot " <<  row << " name " << name;
-    qDebug() << "size " << m_books.size();
-    auto i = m_books.begin() + row;
-    i.value()->setName(name);
+//    qDebug() << "Model slot " <<  row << " name " << name;
+    QList<QVariant> bookParam {name, description, author, image, category};
 
-//    m_books[0]->setName(name);
-//    QModelIndex index= createIndex(row, 0);
-//    this->setData(index, name, Qt::DisplayRole);
+    if (row >= m_books.size()) {    // new book
+        auto id = 0;
+        if ( !m_books.empty() ) {
+            id = m_books.keys().last();
+            id++;
+        }
+        beginInsertRows(QModelIndex(), m_books.size(), m_books.size());
+        m_books.insert(id, new Book(id, bookParam.at(0).toString(), bookParam.at(1).toString(), bookParam.at(2).toString(), bookParam.at(3).toString(), bookParam.at(4).toInt()));
+        m_categories[bookParam.at(4).toInt()]->addBook(id);
+        endInsertRows();
+    } else {    // edit book
+        QModelIndex index = createIndex(row, 0);
+        this->setData(index, bookParam, Qt::DisplayRole);
+    }
 
+}
+
+
+void DataModel::onSaveImage(const QString& url)
+{
+    qDebug() << "Model slot " <<  url << " url";
+    QImage* imageObject = new QImage();
+    imageObject->load(QUrl(url).toLocalFile());
+    QString name = url.right(url.size()-url.lastIndexOf("/")-1);
+    imageObject->save(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + name );
 }
 
 QStringList DataModel::getCategories()
@@ -246,4 +253,10 @@ QStringList DataModel::getCategories()
         cat.append(c->name());
     }
     return cat;
+}
+
+void DataModel::onDeleteBook(const int& row)
+{
+    qDebug() << row;
+     removeRows(row, 1, QModelIndex());
 }

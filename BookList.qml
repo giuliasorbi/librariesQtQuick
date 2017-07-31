@@ -1,6 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import QtQuick.Controls.Material 2.2
+//import QtQuick.Controls.Material 2.2
 import QtQml.Models 2.2
 import QtQuick.Layouts 1.0
 import model 1.0
@@ -51,8 +51,8 @@ ListView {
             width: parent.width
             anchors.verticalCenter: parent.top
         }
-    }
 
+    }
 
     ScrollIndicator.vertical: ScrollIndicator {}
 }

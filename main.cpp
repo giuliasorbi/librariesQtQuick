@@ -21,9 +21,11 @@ int main(int argc, char *argv[])
     QObject *object = component.create();
     QObject *stackview = object ->findChild<QObject*>("stackView");
     QObject *model = object->findChild<QObject*>("stackView")->findChild<QObject*>("bookList")->findChild<QObject*>("model");
-//    QObject *object1 = component.create()->findChild<QObject*>("stackView")->findChild("bookList")->findChild("model");
 
-    QObject::connect(stackview, SIGNAL(saveBook(const int&, const QString&)), model, SLOT(onSaveBook(const int&, const QString&)));
+    QObject::connect(stackview, SIGNAL(saveBook(const int&, const QString&, const QString&, const QString&, const QString&, const int&)), model, SLOT(onSaveBook(const int&, const QString&, const QString&, const QString&, const QString&, const int&)));
+    QObject::connect(stackview, SIGNAL(saveImage(const QString&)), model, SLOT(onSaveImage(const QString&)));
+    QObject::connect(stackview, SIGNAL(deleteBook(const int&)), model, SLOT(onDeleteBook(const int&)));
+
 
     return app.exec();
 }
