@@ -1,19 +1,23 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-//import QtQuick.Controls.Material 2.2
 import QtQml.Models 2.2
 import QtQuick.Layouts 1.0
 import model 1.0
+import manager 1.0
 
 ListView {
-    visible: true
-    id: listView   
+    id: listView
+
     delegate: BookListDelegate {
+
+        width: parent.width
+        height: 70
     }
 
     headerPositioning: ListView.OverlayHeader
     header: Pane {
-        id: header
+        objectName: "hesder"
+        id: headerPane
         z:2
         width: parent.width
 
@@ -25,7 +29,7 @@ ListView {
         }
 
         MenuSeparator {
-            parent: header
+            parent: headerPane
             width: parent.width
             anchors.verticalCenter: parent.bottom
             visible: !listView.atYBeginning
@@ -36,13 +40,19 @@ ListView {
     highlight: Rectangle {
             radius: 5
             color: "#E0E0E0"
-//            Behavior on y { SpringAnimation { spring: 5; damping: 0.3 } }
     }
 
 
     footer: Item {
         id: footer
-        Text { text: qsTr("You have " + model.rowCount(listView.currentIndex) + " books"); font.pointSize: 10 ; padding: 8; anchors.centerIn: parent }
+        Text {
+            id: footerText
+            text: qsTr("You have " + model.count + " books")
+            font.pointSize: 10
+            padding: 8
+            anchors.centerIn: parent
+        }
+
         width: parent.width
         height: 20
 
@@ -54,5 +64,7 @@ ListView {
 
     }
 
-    ScrollIndicator.vertical: ScrollIndicator {}
+    ScrollIndicator.vertical: ScrollIndicator {
+        topPadding: listView.headerItem.height
+    }
 }

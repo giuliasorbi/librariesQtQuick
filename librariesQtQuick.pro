@@ -5,7 +5,9 @@ CONFIG += c++11
 SOURCES += main.cpp \
     book.cpp \
     datamodel.cpp \
-    category.cpp
+    category.cpp \
+    datamanager.cpp \
+    catmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,4 +36,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     book.h \
     datamodel.h \
-    category.h
+    category.h \
+    datamanager.h \
+    catmodel.h

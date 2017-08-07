@@ -4,33 +4,37 @@ import QtQuick.Controls 2.2
 import Qt.labs.platform 1.0
 import book 1.0
 import model 1.0
+import catmodel 1.0
 import category 1.0
 
 
 Item {
     id: root
     objectName: "editBook"
-    property int bookRowIndex : null
+    property int bookIndexRow : null
     property string bookName : null
     property string bookDescription : null
     property string bookAuthor : null
     property string bookImage : null
     property string bookCategoryId : null
-    property var categories : null
-//    signal saveBook(int row, string name)
+    property CatModel catModel : null
 
     ToolBar {
         id: toolBar
         width: parent.width
-//        Label {
-//            id: label
-//            anchors.centerIn: parent
-//            text: "EditBook ToolBar"
-//        }
-
         ToolButton {
-            text: qsTr("Back")
-            onClicked: root.StackView.view.pop();
+            padding: 4
+            Image {
+                id: icon
+                y: parent.padding
+                x: y
+                source: "qrc:/images/back.png"
+                height: toolBar.height - parent.padding * 2
+                width: height
+            }
+            onClicked: {
+                root.StackView.view.pop();
+            }
         }
     }
 
@@ -42,7 +46,6 @@ Item {
             padding: 20
             topPadding: 25
             width: parent.width / 3
-
             Text {
                 verticalAlignment: Qt.AlignCenter
                 text: qsTr("Title: ")
@@ -56,6 +59,7 @@ Item {
                 rightPadding: 20
                 width: parent.width - rightPadding
                 text: bookName
+                focus: true
              }
         } // end title row
     }
@@ -68,7 +72,6 @@ Item {
             padding: 20
             topPadding: 25
             width: parent.width / 3
-
             Text {
                 verticalAlignment: Qt.AlignCenter
                 text: qsTr("Description: ")
@@ -84,9 +87,7 @@ Item {
                 wrapMode: Text.WordWrap
                 text: bookDescription
              }
-
         }
-
     } // end desc row
 
     Row {
@@ -97,7 +98,6 @@ Item {
             padding: 20
             topPadding: 25
             width: parent.width / 3
-
             Text {
 //                    horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignCenter
@@ -114,7 +114,6 @@ Item {
                 text: bookAuthor
              }
         }
-
     } // end author row
 
     Row {
@@ -125,7 +124,6 @@ Item {
             padding: 20
             topPadding: 25
             width: parent.width / 3
-
             Text {
                 verticalAlignment: Qt.AlignCenter
                 text: qsTr("Category: ")
@@ -139,19 +137,11 @@ Item {
                 id: categoryComboBox
                 rightPadding: 20
                 width: parent.width - rightPadding
-                model: ListModel {
-                    Component.onCompleted: {
-                        for (var i = 0; i < categories.length; i++) {
-                            append( { cat: categories[i] } )
-                        }
-                    }
-                } // end model
+                model: catModel.categories
                 currentIndex: bookCategoryId
             }
         }
-
     } // end category row
-
 
     Row {
         id: imageRow
@@ -170,7 +160,6 @@ Item {
         Column {
             padding: 20
             topPadding: 25
-
             width: parent.width / 3
             Text {
                 id: imageText
@@ -178,16 +167,13 @@ Item {
                 text: bookImage
              }
         }
-
-
         Column {
             // load image
             padding: 20
             width: parent.width / 3
-
             Button {
                 id: imageButton
-                text: qsTr("Change image")
+                text: bookIndexRow == -1 ? qsTr("Load Image") : qsTr("Change Image")
                 background: Rectangle {
                    implicitWidth: 80
                    implicitHeight: 30
@@ -196,56 +182,33 @@ Item {
                    border.width: 1
                    radius: 4
                 }
-
                 onClicked: fileDialog.open()
-
-            } // end save button
+            } // end image button
         }
 
         FileDialog {
              id: fileDialog
-//             fileMode: FileDialog.OpenFile
-             nameFilters: ["(*.jpg *.jpeg *png)"/*,  PNG (*.png)"*/]
+             nameFilters: ["(*.jpg *.jpeg *png)"]
              folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
              onAccepted: {
                 var url = fileDialog.file.toString();
-                var name = url.substring(url.lastIndexOf("/") + 1, url.length)
+                var name = url.substring(url. lastIndexOf("/") + 1, url.length)
                 imageText.text = name;
                 StandardPaths.writableLocation(StandardPaths.AppDataLocation) + "/" + name;
                 root.StackView.view.saveImage(url);
              }
-
          }
-
     } // end image row
 
     Row {
-        anchors.topMargin: 20
+        id: buttonRow
         anchors.top: imageRow.bottom
         anchors.horizontalCenter: imageRow.horizontalCenter
-
-//        Button {
-//            id: exitButton
-//            text: qsTr("Back")
-//            background: Rectangle {
-//               implicitWidth: 80
-//               implicitHeight: 30
-//               color: exitButton.down ? "#A0A0A0" : "#f6f6f6"
-//               border.color: "#26282a"
-//               border.width: 1
-//               radius: 4
-//            }
-//            onClicked: {
-////                root.parent.pop();
-//                root.StackView.view.pop();
-//            }
-
-//        } // end exit buttonx
 
         Button {
             id: saveButton
             text: qsTr("Save")
-            anchors.horizontalCenterOffset: 50
+//            focus: true
             background: Rectangle {
                implicitWidth: 80
                implicitHeight: 30
@@ -255,17 +218,48 @@ Item {
                radius: 4
             }
             onClicked: {
-                console.log(root.objectName + " parent: " + root.parent.objectName);
-//                root.parent.saveBook(bookRowIndex, nameTextField.text)
                 if (nameTextField.text != "" ) {
-                    root.StackView.view.saveBook(bookRowIndex, nameTextField.text, descriptionTextEdit.text, autorTextField.text, imageText.text, categoryComboBox.currentIndex);
+                    root.StackView.view.saveBook(bookIndexRow, nameTextField.text, descriptionTextEdit.text, autorTextField.text, imageText.text, categoryComboBox.currentIndex);
                     root.StackView.view.pop();
                 } else {
-                    nameTextField.focus = true
+                    errorMessage.visible = true;
+                    nameTextField.focus = true;
                 }
-             }
-
+            }
 
         } // end save button
+
     }
+    Row {
+        anchors.topMargin: 2
+        anchors.top: buttonRow.bottom
+        anchors.horizontalCenter: buttonRow.horizontalCenter
+        Label {
+            id: errorMessage
+            text : "Missing book title!"
+            visible: false
+            color: "#FF0000"
+        }
+    }
+
+    Keys.onReturnPressed: {
+        saveButton.clicked();
+    }
+
+//    Keys.onPressed: {
+//           if (event.key >= Qt.Key_A && event.key <= Qt.Key_Z) {
+////               console.log("move left");
+//                nameTextField.focus = true;
+//               nameTextField.text +=
+
+//           }
+//    }
+
+//    Keys.onReturnPressed: saveButton.forceActiveFocus();
+
+        Component.onCompleted: {
+            nameTextField.forceActiveFocus();
+        }
+
+
 }

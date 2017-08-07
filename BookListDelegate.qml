@@ -1,14 +1,15 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-//import QtQuick.Controls.Material 2.2
 import QtQml.Models 2.2
 import QtQuick.Layouts 1.0
+import Qt.labs.platform 1.0
+
 import model 1.0
 
 
 Item {
-    id: itemDelegate
-    width: parent.width; height: 70
+    id: root
+    /*width: parent.width;*/
 
     Row {
         width: parent.width
@@ -19,10 +20,9 @@ Item {
             id: imgColumn
             width: parent.width / 6
             height: parent.height
-
             Image {
                 id: cover
-                source: img == "" ? "images/book.png" : "images/" + img
+                source: !img || img == "" ? "images/book.png" :  StandardPaths.writableLocation(StandardPaths.AppDataLocation) + "/" + img;
                 sourceSize.width: parent.width
                 sourceSize.height: parent.height - 20
             }
@@ -33,35 +33,34 @@ Item {
             width: parent.width - imgColumn.width
             leftPadding: 10
             Label {
-                width: parent.width - 20
-                text: title; font.bold: true
+                width: parent.width - parent.leftPadding * 2
+                text: title ? title: ""
+                font.bold: true
+
                 elide: Label.ElideRight
             }
-
             Label {
                 width: parent.width - 30
-                wrapMode: Text.NoWrap
-                text: desc
+                text: desc ? desc : ""
                 elide: Label.ElideRight
             }
-
             Label {
                 width: parent.width - 20
-                wrapMode: Text.NoWrap
                 topPadding: 1
-                text: category
+                text: root.ListView.view.manager ? root.ListView.view.manager.getCategoryName(category)  : ""
                 font.italic: true
                 font.pointSize: 10
                 elide: Label.ElideRight
             }
         }
-    }
+
+    } // end row
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            itemDelegate.ListView.view.currentIndex = index;
-            console.log("clicked: row --> "+ index + ", title --> ", title + " " + itemDelegate.ListView.view.model.rowCount());
+            console.log("clicked: row --> "+ index + ", title --> ", title);
+            root.ListView.view.currentIndex = index;
         }
     }
 }

@@ -3,14 +3,19 @@
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>BookList.qml</file>
+        <file>EditBook.qml</file>
         <file>images/qt-logo.png</file>
-        <file>images/book.jpg</file>
         <file>images/book.png</file>
-        <file>images/book1.png</file>
+        <file>images/back.png</file>
         <file>images/effectiveModernC++.jpg</file>
         <file>images/tour.jpg</file>
+        <file>images/plus.png</file>
+        <file>images/category.png</file>
         <file>BookListDelegate.qml</file>
         <file>BookDetail.qml</file>
-        <file>EditBook.qml</file>
+        <file>CategoriesWindow.qml</file>
+        <file>CategoryDetail.qml</file>
+        <file>CategoryList.qml</file>
+        <file>EditCategory.qml</file>
     </qresource>
 </RCC>

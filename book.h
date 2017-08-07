@@ -10,6 +10,7 @@ class Book : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+
     Q_PROPERTY(QString description READ description() WRITE setDescription NOTIFY descriptionChanged)
     Q_PROPERTY(QString author READ author WRITE setAuthor NOTIFY authorChanged)
     Q_PROPERTY(QString image READ image WRITE setImage NOTIFY imageChanged)
@@ -28,7 +29,7 @@ public:
 
     void setAuthor(const QString& a) { m_author = a; emit(authorChanged()); }
     void setDescription(const QString& desc) { m_description = desc; emit(descriptionChanged()); }
-    void setCategory(const int& cat) {m_category = cat; emit(categoryChanged()); }
+    void setCategory(const int& cat) { m_category = cat; emit(categoryChanged()); }
     void setImage(const QString& image) { m_image = image; emit(imageChanged()); }
 private:
     int m_id;
@@ -43,6 +44,7 @@ signals:
     void authorChanged();
     void imageChanged();
     void categoryChanged();
+    void idChanged();
 
 };
 
