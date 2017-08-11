@@ -32,7 +32,6 @@ Page {
             }
             onClicked: {
                 root.StackView.view.pop();
-//                root.StackView.view.get(root.StackView.view.currentItem.StackView.index).setListFocus();
             }
         }
         ToolButton {
@@ -74,8 +73,8 @@ Page {
         anchors.topMargin: header.height
         anchors.leftMargin: catList.width
         onEditClicked: root.StackView.view.push(Qt.resolvedUrl("qrc:/EditCategory.qml"), {"categoryRowIndex": catList.currentIndex, "categoryName": category.cname, "categoryDescription": category.desc });
-        onDeleteClicked: root.StackView.view.deleteCategory(catList.currentIndex);
-        onDefaultCategoryFocus: catList.currentIndex = 0
+        onDeleteClicked: { root.StackView.view.deleteCategory(catList.currentIndex);  catList.forceActiveFocus(); }
+//        onDefaultCategoryFocus: catList.currentIndex = 0
 
     } // end CategoryDetail
 

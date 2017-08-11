@@ -32,7 +32,7 @@ public:
     Q_INVOKABLE void deleteCategory(const int& row);
 
     Q_INVOKABLE QString getCategoryName(const int& catId) const;
-    Q_INVOKABLE QString getBookName(const int& bookId) const;
+    Q_INVOKABLE QStringList getBooksTitles(const QVector<int> books) const;
 
 private:
     DataModel* m_bookModel;

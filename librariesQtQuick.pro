@@ -1,4 +1,4 @@
-QT += qml quick
+QT += qml quick sql
 
 CONFIG += c++11
 
@@ -7,8 +7,8 @@ SOURCES += main.cpp \
     datamodel.cpp \
     category.cpp \
     datamanager.cpp \
-    catmodel.cpp
-
+    catmodel.cpp \
+    datastorage.cpp
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -38,4 +38,5 @@ HEADERS += \
     datamodel.h \
     category.h \
     datamanager.h \
-    catmodel.h
+    catmodel.h \
+    datastorage.h

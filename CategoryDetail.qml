@@ -21,7 +21,7 @@ Pane {
 
     signal editClicked()
     signal deleteClicked()
-    signal defaultCategoryFocus()
+//    signal defaultCategoryFocus()
 
     GridLayout {
         id: gridLayout
@@ -65,7 +65,7 @@ Pane {
         ListView {
             id: list
             Layout.leftMargin: margin
-            width: parent.width / 2; height: parent.height / 2
+            width: parent.width / 2; height: parent.height - editButton.height - name.height - headerItem.height
             headerPositioning: ListView.OverlayHeader
             Layout.row: 1
             Layout.column: 1
@@ -81,19 +81,35 @@ Pane {
                     text: qsTr("Books")
                 }
             }
-            model : ListModel {
+
+            model: ListModel {
                 id: model
                 function updateModel(category) {
-                    model.clear();
-                    if (category.books.length == 0) {
+                    model.clear()
+                    var books = root.manager.getBooksTitles(category.books);
+                    if (books.length == 0) {
                         model.append({"title": "Empty BookList"});
                     } else {
-                        for (var i = 0; i < category.books.length; i++ ) {
-                            model.append( {"title": root.manager.getBookName(category.books[i])} )
+                        for (var i = 0; i < books.length; i++ ) {
+                            model.append( {"title": books[i]} )
                         }
                     }
                 }
-            }
+            } // end model
+
+//            model : ListModel {
+//                id: model
+//                function updateModel(category) {
+//                    model.clear();
+//                    if (category.books.isEmpty) {
+//                        model.append({"title": "Empty BookList"});
+//                    } else {
+//                        for (var i = 0; i < category.books.length; i++ ) {
+//                            model.append( {"title": root.manager.getBookName(category.books[i])} )
+//                        }
+//                    }
+//                }
+//            }
 
             delegate: Label {
                 text: title
@@ -146,7 +162,7 @@ Pane {
             visible: category == null ? false : true
             onClicked: {
                 root.deleteClicked();
-                root.defaultCategoryFocus();
+//                root.defaultCategoryFocus();
             }
         }
     }

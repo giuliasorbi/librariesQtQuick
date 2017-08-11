@@ -16,7 +16,7 @@ Item {
     property string bookDescription : null
     property string bookAuthor : null
     property string bookImage : null
-    property string bookCategoryId : null
+    property int bookCategoryIndex : null
     property CatModel catModel : null
 
     ToolBar {
@@ -138,7 +138,7 @@ Item {
                 rightPadding: 20
                 width: parent.width - rightPadding
                 model: catModel.categories
-                currentIndex: bookCategoryId
+                currentIndex: bookCategoryIndex
             }
         }
     } // end category row
@@ -208,7 +208,6 @@ Item {
         Button {
             id: saveButton
             text: qsTr("Save")
-//            focus: true
             background: Rectangle {
                implicitWidth: 80
                implicitHeight: 30
@@ -246,20 +245,8 @@ Item {
         saveButton.clicked();
     }
 
-//    Keys.onPressed: {
-//           if (event.key >= Qt.Key_A && event.key <= Qt.Key_Z) {
-////               console.log("move left");
-//                nameTextField.focus = true;
-//               nameTextField.text +=
-
-//           }
-//    }
-
-//    Keys.onReturnPressed: saveButton.forceActiveFocus();
-
-        Component.onCompleted: {
-            nameTextField.forceActiveFocus();
-        }
-
+    Component.onCompleted: {
+        nameTextField.forceActiveFocus();
+    }
 
 }

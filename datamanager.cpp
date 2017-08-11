@@ -10,15 +10,15 @@ DataManager::DataManager(QObject* parent)
 
 void DataManager::saveBook(const int& row, const QString& name, const QString& description, const QString& author, const QString& image, const int& category)
 {
+    auto catId = m_catModel->getCategoryId(category);
     if (row == -1) { // new book
-        auto newId = m_bookModel->addBook(name, description, author, image, category);
-        m_catModel->updateBook(newId, category, 0); // flag = 0 : new book
+        auto newId = m_bookModel->addBook(name, description, author, image, catId);
+        m_catModel->updateBook(newId, catId, 0); // flag = 0 : new book
 
     } else {
-        if (m_bookModel->updateBook(row, name, description, author, image, category)) {
-             m_catModel->updateBook(m_bookModel->getBookId(row), category, 1);
+        if (m_bookModel->updateBook(row, name, description, author, image, catId)) {
+            m_catModel->updateBook(m_bookModel->getBookId(row),  catId, 1); // flag = 1 : edit book
         }
-
     }
 }
 
@@ -54,13 +54,9 @@ QString DataManager::getCategoryName(const int& catId) const
     return m_catModel->getCategoryName(catId);
 }
 
-QString DataManager::getBookName(const int& bookId) const
+QStringList DataManager::getBooksTitles(const QVector<int> books) const
 {
-    return m_bookModel->getBookName(bookId);
+    return m_bookModel->getBooksTitles(books);
 }
 
 // -------------------------------------------------------------------------------------------------
-
-
-
-

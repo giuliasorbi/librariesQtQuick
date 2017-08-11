@@ -95,7 +95,6 @@ Item {
         Button {
             id: saveButton
             text: qsTr("Save")
-            focus: true
             background: Rectangle {
                implicitWidth: 80
                implicitHeight: 30
@@ -108,7 +107,6 @@ Item {
                 if (nameTextField.text != "" ) {
                     root.StackView.view.saveCategory(categoryRowIndex, nameTextField.text, descriptionTextEdit.text);
                     root.StackView.view.pop();
-//                    root.StackView.view.get(root.StackView.view.currentItem.StackView.index).setListFocus();
 
                 } else {
                     errorMessage.visible = true;
@@ -135,8 +133,11 @@ Item {
         }
     }
     Keys.onReturnPressed: {
-//        console.log( 'Key Return was pressed');
         saveButton.clicked();
+    }
+
+    Component.onCompleted: {
+        nameTextField.forceActiveFocus();
     }
 
 }

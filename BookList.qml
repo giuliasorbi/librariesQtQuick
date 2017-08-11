@@ -8,6 +8,7 @@ import manager 1.0
 ListView {
     id: listView
 
+
     delegate: BookListDelegate {
 
         width: parent.width

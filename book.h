@@ -10,7 +10,6 @@ class Book : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-
     Q_PROPERTY(QString description READ description() WRITE setDescription NOTIFY descriptionChanged)
     Q_PROPERTY(QString author READ author WRITE setAuthor NOTIFY authorChanged)
     Q_PROPERTY(QString image READ image WRITE setImage NOTIFY imageChanged)

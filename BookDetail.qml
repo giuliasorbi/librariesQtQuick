@@ -19,7 +19,6 @@ Pane {
     signal editClicked()
     signal deleteClicked()
 
-
     GridLayout {
         id: gridLayout
         width: parent.width
@@ -62,7 +61,7 @@ Pane {
             Layout.column: 1
             Layout.row: 1
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
-            source: book == null  || book.image == "" ? "qrc:/images/book.png" : StandardPaths.writableLocation(StandardPaths.AppDataLocation) + "/" + book.image
+            source: book == null || book.image == "" ? "qrc:/images/book.png" : book.image == "tour.jpg" ? "qrc:/images/tour.jpg" : book.image == "effective.jpg" ? "qrc:/images/effective.jpg" :StandardPaths.writableLocation(StandardPaths.AppDataLocation) + "/" + img;
             sourceSize.height: description.height
             visible: book == null ? false : true
         }

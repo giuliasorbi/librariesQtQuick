@@ -5,13 +5,15 @@ import QtQml.Models 2.2
 import model 1.0
 import catmodel 1.0
 import manager 1.0
+import storage 1.0
+
 
 ApplicationWindow {
     id: window
     objectName: "window"
     visible: true
     width: 640
-    height: 480
+    height: 490
     title: qsTr("Libraries")
 
     StackView {
@@ -25,7 +27,7 @@ ApplicationWindow {
         signal deleteCategory(int row)
         signal saveCategory(int row, string name, string description)
 
-        onSaveBook: dataManager.saveBook(row, name, description, author, image, category);
+        onSaveBook: dataManager.saveBook(row, name, description, author, image, category); //category index
         onDeleteBook: dataManager.deleteBook(row);
         onSaveImage: dataModel.saveImage(url);
         onDeleteCategory: dataManager.deleteCategory(row);
@@ -67,7 +69,7 @@ ApplicationWindow {
                         height: bar.height - parent.padding * 2
                         width: height
                     }
-                    onClicked: stackView.push(Qt.resolvedUrl("qrc:/EditBook.qml"), {"bookIndexRow": -1, "bookName": "", "bookDescription": "", "bookAuthor": "", "bookImage": "", "bookCategoryId": "", "catModel": categoryModel});
+                    onClicked:  { stackView.push(Qt.resolvedUrl("qrc:/EditBook.qml"), {"bookIndexRow": -1, "bookName": "", "bookDescription": "", "bookAuthor": "", "bookImage": "", "bookCategoryIndex": "", "catModel": categoryModel}); }
                 }
             } // end toolbar
 
@@ -89,12 +91,12 @@ ApplicationWindow {
             BookDetail {
                 id: bookDetail
                 book: bookList.currentIndex != -1  ? bookList.model.get(bookList.currentIndex) : null
-                cat: bookList.currentIndex != -1 ? categoryModel.getCategoryName(book.category) : ""
+                cat: bookList.currentIndex != -1 ? bookList.manager.getCategoryName(book.category) : ""/*categoryModel.getCategoryName(book.category) : ""*/
                 anchors.fill: parent
                 anchors.topMargin: bar.height
                 anchors.leftMargin: bookList.width
-                onEditClicked: stackView.push(Qt.resolvedUrl("qrc:/EditBook.qml"), {"bookIndexRow": bookList.currentIndex, "bookName": book.name, "bookDescription": book.description, "bookAuthor": book.author, "bookImage": book.image, "bookCategoryId": book.category, "catModel": categoryModel} );
-                onDeleteClicked: stackView.deleteBook(bookList.currentIndex);
+                onEditClicked: stackView.push(Qt.resolvedUrl("qrc:/EditBook.qml"), {"bookIndexRow": bookList.currentIndex, "bookName": book.name, "bookDescription": book.description, "bookAuthor": book.author, "bookImage": book.image, "bookCategoryIndex": categoryModel.categories.indexOf(cat)/* dataStorage.selectCategories().indexOf(cat)*/, "catModel": categoryModel /*"categories": dataStorage.selectCategories()*/} );
+                onDeleteClicked: { stackView.deleteBook(bookList.currentIndex); bookList.forceActiveFocus(); }
 
             } // end BookDetail
 
@@ -113,18 +115,22 @@ ApplicationWindow {
 
     DataManager {
         id: dataManager
-        Component.onCompleted: {
-            dataManager.setBookModel(dataModel);
-            dataManager.setCatModel(categoryModel);
-        }
+        bookModel: dataModel
+        catModel: categoryModel
     }
 
     DataModel {
        id: dataModel
+       dataStorage: dataStorage
     }
 
     CatModel {
         id: categoryModel
-        Component.onCompleted: categoryModel.init();
+        dataStorage: dataStorage
     }
+
+    DataStorage {
+        id: dataStorage
+    }
+
 }

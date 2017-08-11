@@ -4,6 +4,7 @@
 #include <QMap>
 #include <QAbstractItemModel>
 #include "category.h"
+#include "datastorage.h"
 //#include "book.h"
 
 class CatModel : public QAbstractListModel
@@ -11,6 +12,8 @@ class CatModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QStringList categories READ getCategories NOTIFY categoriesChanged)
+    Q_PROPERTY(DataStorage* dataStorage READ dataStorage WRITE setDataStorage NOTIFY dataStorageChanged)
+
 
 public:
     enum CategoryRoles {
@@ -23,7 +26,7 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent) override;
     QHash<int, QByteArray> roleNames() const override;
 
-    int count() const { return categories.size(); }
+    int count() const { return m_dataStorage->countCategories(); }
 
     void deleteCategory(const int& row);
     bool updateCategory(const int& row, const QString& name, const QString& description);
@@ -35,17 +38,26 @@ public:
     int getCategoryId(const int& row) const;
     QStringList getCategories() const;
 
-    Q_INVOKABLE void init();
+    Q_INVOKABLE void fetchMore(const QModelIndex &parent  = QModelIndex()) override;
+    bool canFetchMore(const QModelIndex &parent = QModelIndex()) const override;
     Q_INVOKABLE Category* get(const int& row) const;
-    Q_INVOKABLE QString getCategoryName(const int& id) const { return categories.value(id)->name(); }
+
+    Q_INVOKABLE void setDataStorage(DataStorage* s) { m_dataStorage = s; }
+
+    DataStorage* dataStorage() const { return m_dataStorage; }
+    QString getCategoryName(const int& catId) const;
 
 signals:
     void countChanged();
     void categoriesChanged();
+    void dataStorageChanged();
 
 private:
     QMap<int, Category*> categories;
-    bool m_canFetch = true;
+
+    const int m_size = 6;
+    int m_offset = 0;
+    DataStorage* m_dataStorage;
 
 };
 
